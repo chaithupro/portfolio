@@ -19,14 +19,20 @@ export default defineConfig({
           vendor: ['react', 'react-dom', 'framer-motion'],
         }
       }
-    }
+    },
+    // Ensure assets are properly copied
+    assetsInlineLimit: 0,
+    chunkSizeWarningLimit: 1500,
+    sourcemap: false
   },
   optimizeDeps: {
     include: ['three']
   },
-  assetsInclude: ['**/*.gltf', '**/*.glb', '**/*.bin'],
+  assetsInclude: ['**/*.gltf', '**/*.glb', '**/*.bin', '**/*.jpg', '**/*.png', '**/*.svg'],
   server: {
     open: true,
     host: true
-  }
+  },
+  // For Netlify
+  base: './'
 })
