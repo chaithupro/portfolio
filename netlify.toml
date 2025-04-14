@@ -11,9 +11,16 @@
   to = "/index.html"
   status = 200
 
-# Enable brotli compression
+# Handle 404 errors
+[[redirects]]
+  from = "/*"
+  to = "/error.html"
+  status = 404
+
+# Enable caching but with a less restrictive CSP
 [[headers]]
   for = "/*"
     [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
-    Content-Security-Policy = "default-src 'self'; connect-src 'self' https://emailjs.com https://*.emailjs.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://emailjs.com https://*.emailjs.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:;" 
+    # Less restrictive CSP for development
+    Content-Security-Policy = "default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval';" 

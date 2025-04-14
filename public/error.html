@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Error | Portfolio</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: #050816;
+      color: #f3f3f3;
+      padding: 40px;
+      margin: 0;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+    h1 {
+      color: #915EFF;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    p {
+      margin-bottom: 1rem;
+      max-width: 600px;
+    }
+    .error-container {
+      background-color: rgba(21, 16, 48, 0.8);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+    .btn {
+      display: inline-block;
+      background-color: #915EFF;
+      color: white;
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 4px;
+      font-weight: 500;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+    }
+    .btn:hover {
+      background-color: #7c4dff;
+      transform: translateY(-2px);
+    }
+    .error-details {
+      background-color: rgba(0, 0, 0, 0.2);
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 20px;
+      text-align: left;
+      overflow: auto;
+      max-width: 100%;
+    }
+    code {
+      font-family: monospace;
+      font-size: 0.9rem;
+      color: #f8f8f8;
+    }
+  </style>
+</head>
+<body>
+  <div class="error-container">
+    <h1>Something went wrong</h1>
+    <p>We're having trouble loading the portfolio. This might be due to one of the following reasons:</p>
+    
+    <div class="error-details">
+      <code>
+        - Network connectivity issues<br>
+        - Missing JavaScript dependencies<br>
+        - 3D assets failed to load<br>
+        - Incompatible browser (try Chrome or Firefox)<br>
+        - Low device memory or processing power
+      </code>
+    </div>
+    
+    <p>If you're on a mobile device, try accessing from a desktop computer for the full experience.</p>
+    
+    <a href="/" class="btn">Try Again</a>
+  </div>
+  
+  <script>
+    // Add error logging
+    window.onerror = function(message, source, lineno, colno, error) {
+      console.error("Error caught:", message, "at", source, ":", lineno);
+      // Could send to an analytics service
+    };
+    
+    // Redirect after a few seconds
+    setTimeout(function() {
+      window.location.href = '/';
+    }, 10000);
+  </script>
+</body>
+</html> 
