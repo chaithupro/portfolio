@@ -4,12 +4,40 @@ import { useState, Suspense, useEffect } from "react";
 import { styles } from "../styles";
 import { ComputersCanvas } from "./canvas";
 import ErrorBoundary from "./ErrorBoundary";
-import { shouldUseSimplifiedUI } from "../utils/deviceDetection";
+import { shouldUseSimplifiedUI, isMobileDevice } from "../utils/deviceDetection";
 // Direct import of images we can use if laptop_placeholder.png is not available
 import webImage from "../assets/web.png";
 import mobileImage from "../assets/mobile.png";
 
-// Simple placeholder component for mobile/low-end devices
+// Enhanced hero section for mobile
+const MobileHeroContent = () => {
+  return (
+    <div className="w-full h-[60vh] flex items-center justify-center">
+      <div className="relative w-full max-w-lg z-10">
+        <div className="absolute -top-10 -left-10 w-60 h-60 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob"></div>
+        <div className="absolute -bottom-10 -right-10 w-60 h-60 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob animation-delay-4000"></div>
+        <div className="flex flex-col items-center justify-center text-center p-4">
+          <h2 className="text-3xl font-bold text-white mb-4">Full Stack Developer</h2>
+          <p className="text-secondary text-xl mb-6">Turning ideas into digital reality</p>
+          
+          <div className="grid grid-cols-3 gap-4 max-w-xs mx-auto mb-8">
+            {["React", "Node.js", "Three.js", "MongoDB", "TypeScript", "Next.js"].map((tech, index) => (
+              <div key={index} className="bg-tertiary p-2 rounded-lg text-white text-sm hover:bg-purple-700 transition-colors">
+                {tech}
+              </div>
+            ))}
+          </div>
+          
+          <a href="#about" className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-full transition-all hover:scale-105">
+            Explore My Work
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Simple placeholder component for desktop low-end devices
 const SimpleLaptopView = () => {
   return (
     <div className="w-full h-[60vh] flex items-center justify-center">
@@ -38,10 +66,12 @@ const Hero = () => {
   const [canvasError, setCanvasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [useSimpleUI, setUseSimpleUI] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     // Check device capability on mount
     setUseSimpleUI(shouldUseSimplifiedUI());
+    setIsMobile(isMobileDevice());
     
     // Set loading to false after a timeout to prevent indefinite loading state
     const timer = setTimeout(() => {
@@ -134,7 +164,9 @@ const Hero = () => {
       </div>
 
       <ErrorBoundary redirectToHome={false}>
-        {useSimpleUI ? (
+        {isMobile ? (
+          <MobileHeroContent />
+        ) : useSimpleUI ? (
           <SimpleLaptopView />
         ) : (
           <Suspense fallback={

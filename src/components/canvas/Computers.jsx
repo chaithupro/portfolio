@@ -6,7 +6,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
 
 import CanvasLoader from "../Loader";
-import { shouldUseSimplifiedUI } from "../../utils/deviceDetection";
+import { shouldUseSimplifiedUI, isMobileDevice } from "../../utils/deviceDetection";
 
 // Configure draco loader to improve performance
 const dracoLoader = new DRACOLoader();
@@ -16,10 +16,12 @@ dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
-// Preload the model to avoid loading delays on component mount
-useGLTF.preload("./desktop_pc/scene.gltf", true, (loader) => {
-  loader.setDRACOLoader(dracoLoader);
-});
+// Preload the model only if not on a mobile device
+if (typeof window !== 'undefined' && !isMobileDevice()) {
+  useGLTF.preload("./desktop_pc/scene.gltf", true, (loader) => {
+    loader.setDRACOLoader(dracoLoader);
+  });
+}
 
 const Computers = ({ isMobile }) => {
   const [modelLoaded, setModelLoaded] = useState(false);
@@ -81,9 +83,18 @@ const Computers = ({ isMobile }) => {
 const ComputersCanvas = ({ onError }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [useSimpleUI, setUseSimpleUI] = useState(false);
+  const [isMobileDevice_, setIsMobileDevice] = useState(false);
 
   useEffect(() => {
-    // Check if this is a low-end or mobile device
+    // Check if this is a mobile device - completely skip rendering if true
+    const mobileDev = isMobileDevice();
+    setIsMobileDevice(mobileDev);
+    
+    if (mobileDev) {
+      return; // Don't proceed with other checks if it's a mobile device
+    }
+    
+    // Check if this is a low-end device
     setUseSimpleUI(shouldUseSimplifiedUI());
     
     // Add a listener for changes to the screen size
@@ -106,7 +117,12 @@ const ComputersCanvas = ({ onError }) => {
     };
   }, []);
 
-  // If this is a low-end device or user has enabled simplified UI, don't render the 3D model
+  // If this is a mobile device, don't render anything
+  if (isMobileDevice_) {
+    return null;
+  }
+  
+  // If this is a low-end device, don't render the 3D model
   if (useSimpleUI) {
     return null;
   }
