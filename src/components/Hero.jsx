@@ -113,23 +113,38 @@ const Hero = () => {
             }
             .hero-text-container {
               padding-top: 1rem !important;
+              max-width: 100% !important;
+              width: 100% !important;
+              display: flex !important;
+              flex-direction: column !important;
+              align-items: center !important;
+              text-align: center !important;
             }
             .hero-head-text {
-              font-size: 2.5rem !important;
+              font-size: 2.75rem !important;
               line-height: 1.2 !important;
               text-align: center !important;
-              margin-top: 0 !important;
+              margin: 0 auto !important;
+              width: 100% !important;
             }
             .hero-sub-text {
-              font-size: 1rem !important;
-              line-height: 1.4 !important;
+              font-size: 1.1rem !important;
+              line-height: 1.5 !important;
               text-align: center !important;
-              margin-top: 0.5rem !important;
+              margin: 0.5rem auto !important;
+              width: 100% !important;
+              max-width: 300px !important;
+            }
+            .mobile-text-wrap {
+              display: inline !important;
             }
           }
           @media (min-width: 641px) {
             .scroll-button {
               bottom: -20px !important;
+            }
+            .mobile-text-wrap {
+              display: none !important;
             }
           }
           
@@ -170,13 +185,22 @@ const Hero = () => {
           <h1 className={`${styles.heroHeadText} text-white hero-head-text`}>
             Hi, I'm <span className='text-[#915EFF]'>Amogh</span>
           </h1>
-          <p className={`${styles.heroSubText} mt-2 text-white-100 hero-sub-text`}>
-            Software Developer Creating Seamless Interfaces 
-            {!isMobile && <br className='sm:block hidden' />}
-            Where Code Meets Creativity 
-            {!isMobile && <br className='lg:block hidden' />}
-            Brings Ideas to Reality
-          </p>
+          {isMobile ? (
+            <p className={`${styles.heroSubText} mt-2 text-white-100 hero-sub-text`}>
+              Software Developer <br />
+              Creating Seamless Interfaces <br />
+              Where Code Meets Creativity <br />
+              Brings Ideas to Reality
+            </p>
+          ) : (
+            <p className={`${styles.heroSubText} mt-2 text-white-100 hero-sub-text`}>
+              Software Developer Creating Seamless Interfaces 
+              <br className='sm:block hidden' />
+              Where Code Meets Creativity 
+              <br className='lg:block hidden' />
+              Brings Ideas to Reality
+            </p>
+          )}
         </div>
       </div>
 
