@@ -1,9 +1,45 @@
 import { motion } from "framer-motion";
+import { useState, Suspense, useEffect } from "react";
 
 import { styles } from "../styles";
 import { ComputersCanvas } from "./canvas";
+import ErrorBoundary from "./ErrorBoundary";
 
 const Hero = () => {
+  const [canvasError, setCanvasError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const handleCanvasError = () => {
+    console.error("3D canvas failed to load");
+    setCanvasError(true);
+    setIsLoading(false);
+  };
+
+  // Set loading to false after a timeout to prevent indefinite loading state
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 5000); // 5 seconds timeout
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Redirect to homepage if canvas error persists for too long
+  useEffect(() => {
+    let redirectTimer;
+    if (canvasError) {
+      // If canvas error occurs, set a timer to redirect to homepage
+      redirectTimer = setTimeout(() => {
+        console.log("Redirecting to homepage due to persistent canvas error");
+        window.location.href = '/';
+      }, 5000); // 5 seconds before redirect
+    }
+    
+    return () => {
+      if (redirectTimer) clearTimeout(redirectTimer);
+    };
+  }, [canvasError]);
+
   return (
     <section className={`relative w-full h-screen mx-auto`}>
       <style>
@@ -41,7 +77,29 @@ const Hero = () => {
         </div>
       </div>
 
-      <ComputersCanvas />
+      <ErrorBoundary redirectToHome={true}>
+        <Suspense fallback={
+          <div className="w-full h-screen flex items-center justify-center">
+            <p className="text-white">Loading 3D Model...</p>
+          </div>
+        }>
+          {isLoading && (
+            <div className="w-full h-screen flex items-center justify-center">
+              <p className="text-white">Loading 3D Model...</p>
+            </div>
+          )}
+          {!canvasError ? (
+            <ComputersCanvas onError={handleCanvasError} />
+          ) : (
+            <div className="w-full h-[60vh] flex items-center justify-center">
+              <div className="bg-tertiary p-8 rounded-xl text-center max-w-md">
+                <h3 className="text-white text-xl mb-2">3D Model Failed to Load</h3>
+                <p className="text-secondary">Redirecting to homepage...</p>
+              </div>
+            </div>
+          )}
+        </Suspense>
+      </ErrorBoundary>
 
       <div className="scroll-button" style={{ position: 'absolute', bottom: '0px', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 20 }}>
         <a href='#about' className="block p-4">
