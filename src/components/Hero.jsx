@@ -6,6 +6,9 @@ import { ComputersCanvas } from "./canvas";
 import ErrorBoundary from "./ErrorBoundary";
 import { isMobileDevice, isLowEndDevice, supportsWebGL } from "../utils/device";
 
+// Import one of the existing images to use as a fallback
+import computerImage from "../assets/web.png";
+
 const Hero = () => {
   const [canvasError, setCanvasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -107,13 +110,9 @@ const Hero = () => {
           <div className="w-full h-[60vh] flex items-center justify-center">
             <div className="text-center p-5">
               <img 
-                src="/desktop_pc/computer_static.png" 
+                src={computerImage} 
                 alt="Computer Workstation" 
                 className="mx-auto max-w-full h-auto max-h-[300px] object-contain"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = "/hero-fallback.jpg"; // Fallback image if main one fails
-                }}
               />
               <p className="text-secondary mt-4 text-lg">
                 Full Stack Developer
