@@ -6,6 +6,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
 
 import CanvasLoader from "../Loader";
+import { shouldUseSimplifiedUI } from "../../utils/deviceDetection";
 
 // Configure draco loader to improve performance
 const dracoLoader = new DRACOLoader();
@@ -65,10 +66,10 @@ const Computers = ({ isMobile }) => {
           </mesh>
         )}
         
-        {/* Actual model */}
+        {/* Actual model - lower polygon version for mobile */}
         <primitive
           object={computer.scene}
-          scale={isMobile ? 0.7 : 0.75}
+          scale={isMobile ? 0.6 : 0.75}
           position={isMobile ? [0, -3, -2.2] : [0, -3.25, -1.5]}
           rotation={[-0.01, -0.2, -0.1]}
         />
@@ -77,10 +78,14 @@ const Computers = ({ isMobile }) => {
   );
 };
 
-const ComputersCanvas = () => {
+const ComputersCanvas = ({ onError }) => {
   const [isMobile, setIsMobile] = useState(false);
+  const [useSimpleUI, setUseSimpleUI] = useState(false);
 
   useEffect(() => {
+    // Check if this is a low-end or mobile device
+    setUseSimpleUI(shouldUseSimplifiedUI());
+    
     // Add a listener for changes to the screen size
     const mediaQuery = window.matchMedia("(max-width: 500px)");
 
@@ -101,6 +106,11 @@ const ComputersCanvas = () => {
     };
   }, []);
 
+  // If this is a low-end device or user has enabled simplified UI, don't render the 3D model
+  if (useSimpleUI) {
+    return null;
+  }
+
   return (
     <Canvas
       frameloop='demand'
@@ -113,12 +123,24 @@ const ComputersCanvas = () => {
         antialias: false // Disable antialiasing for better performance
       }}
       performance={{ min: 0.5 }} // Allow throttling for better performance
+      onCreated={({ gl }) => {
+        // Additional performance optimizations
+        gl.shadowMap.enabled = false; // Disable shadow mapping for mobile
+        if (isMobile) {
+          gl.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+        }
+      }}
+      onError={(error) => {
+        console.error("Canvas error:", error);
+        if (onError) onError(error);
+      }}
     >
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls
           enableZoom={false}
           maxPolarAngle={Math.PI / 2}
           minPolarAngle={Math.PI / 2}
+          enableRotate={!isMobile} // Disable rotation on mobile
         />
         <Computers isMobile={isMobile} />
       </Suspense>

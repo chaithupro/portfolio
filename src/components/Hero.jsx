@@ -4,19 +4,46 @@ import { useState, Suspense, useEffect } from "react";
 import { styles } from "../styles";
 import { ComputersCanvas } from "./canvas";
 import ErrorBoundary from "./ErrorBoundary";
+import { shouldUseSimplifiedUI } from "../utils/deviceDetection";
+// Direct import of images we can use if laptop_placeholder.png is not available
+import webImage from "../assets/web.png";
+import mobileImage from "../assets/mobile.png";
+
+// Simple placeholder component for mobile/low-end devices
+const SimpleLaptopView = () => {
+  return (
+    <div className="w-full h-[60vh] flex items-center justify-center">
+      <div className="relative w-full max-w-lg">
+        <div className="absolute -top-10 -left-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-50 animate-blob"></div>
+        <div className="absolute -bottom-10 -right-10 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-50 animate-blob animation-delay-4000"></div>
+        <div className="relative">
+          <img 
+            src={webImage} // Use imported image directly
+            alt="Developer Workspace" 
+            className="w-full max-w-md mx-auto object-contain"
+          />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-white text-center p-4 bg-black bg-opacity-50 rounded-lg">
+              <h2 className="text-xl font-bold">Full Stack Developer</h2>
+              <p>Crafting digital experiences</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const Hero = () => {
   const [canvasError, setCanvasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [useSimpleUI, setUseSimpleUI] = useState(false);
 
-  const handleCanvasError = () => {
-    console.error("3D canvas failed to load");
-    setCanvasError(true);
-    setIsLoading(false);
-  };
-
-  // Set loading to false after a timeout to prevent indefinite loading state
   useEffect(() => {
+    // Check device capability on mount
+    setUseSimpleUI(shouldUseSimplifiedUI());
+    
+    // Set loading to false after a timeout to prevent indefinite loading state
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 5000); // 5 seconds timeout
@@ -24,10 +51,16 @@ const Hero = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  const handleCanvasError = () => {
+    console.error("3D canvas failed to load");
+    setCanvasError(true);
+    setIsLoading(false);
+  };
+
   // Redirect to homepage if canvas error persists for too long
   useEffect(() => {
     let redirectTimer;
-    if (canvasError) {
+    if (canvasError && !useSimpleUI) {
       // If canvas error occurs, set a timer to redirect to homepage
       redirectTimer = setTimeout(() => {
         console.log("Redirecting to homepage due to persistent canvas error");
@@ -38,7 +71,7 @@ const Hero = () => {
     return () => {
       if (redirectTimer) clearTimeout(redirectTimer);
     };
-  }, [canvasError]);
+  }, [canvasError, useSimpleUI]);
 
   return (
     <section className={`relative w-full h-screen mx-auto`}>
@@ -52,6 +85,29 @@ const Hero = () => {
           @media (min-width: 641px) {
             .scroll-button {
               bottom: -20px !important;
+            }
+          }
+          
+          .animate-blob {
+            animation: blob-bounce 7s infinite;
+          }
+          
+          .animation-delay-4000 {
+            animation-delay: 4s;
+          }
+          
+          @keyframes blob-bounce {
+            0%, 100% {
+              transform: translate(0, 0) scale(1);
+            }
+            25% {
+              transform: translate(20px, 20px) scale(1.1);
+            }
+            50% {
+              transform: translate(0, 20px) scale(1);
+            }
+            75% {
+              transform: translate(-20px, 0) scale(0.9);
             }
           }
         `}
@@ -77,28 +133,27 @@ const Hero = () => {
         </div>
       </div>
 
-      <ErrorBoundary redirectToHome={true}>
-        <Suspense fallback={
-          <div className="w-full h-screen flex items-center justify-center">
-            <p className="text-white">Loading 3D Model...</p>
-          </div>
-        }>
-          {isLoading && (
+      <ErrorBoundary redirectToHome={false}>
+        {useSimpleUI ? (
+          <SimpleLaptopView />
+        ) : (
+          <Suspense fallback={
             <div className="w-full h-screen flex items-center justify-center">
               <p className="text-white">Loading 3D Model...</p>
             </div>
-          )}
-          {!canvasError ? (
-            <ComputersCanvas onError={handleCanvasError} />
-          ) : (
-            <div className="w-full h-[60vh] flex items-center justify-center">
-              <div className="bg-tertiary p-8 rounded-xl text-center max-w-md">
-                <h3 className="text-white text-xl mb-2">3D Model Failed to Load</h3>
-                <p className="text-secondary">Redirecting to homepage...</p>
+          }>
+            {isLoading && (
+              <div className="w-full h-screen flex items-center justify-center">
+                <p className="text-white">Loading 3D Model...</p>
               </div>
-            </div>
-          )}
-        </Suspense>
+            )}
+            {!canvasError ? (
+              <ComputersCanvas onError={handleCanvasError} />
+            ) : (
+              <SimpleLaptopView />
+            )}
+          </Suspense>
+        )}
       </ErrorBoundary>
 
       <div className="scroll-button" style={{ position: 'absolute', bottom: '0px', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 20 }}>

@@ -13,6 +13,33 @@
   color-scheme: dark;
 }
 
+/* Optimize for low-end devices */
+html.low-end-device {
+  /* Disable animations for low-end devices */
+  animation-duration: 0s !important;
+  transition-duration: 0s !important;
+}
+
+/* Make sure images don't cause layout shifts */
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Optimize rendering for mobile */
+@media (max-width: 768px) {
+  .bg-hero-pattern {
+    background-size: cover;
+    background-position: center;
+  }
+  
+  /* Reduce animation complexity on mobile */
+  .animate-blob {
+    animation-duration: 10s;
+  }
+}
+
 .hash-span {
   margin-top: -100px;
   padding-bottom: 100px;
@@ -124,6 +151,11 @@
   text-indent: -9999em;
   animation: mulShdSpin 1.1s infinite ease;
   transform: translateZ(0);
+}
+
+/* Optimize loader animation for mobile */
+html.low-end-device .canvas-loader {
+  animation-duration: 2s;
 }
 
 @keyframes mulShdSpin {

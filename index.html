@@ -3,7 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#050816" />
+    <meta name="description" content="Amogh's Portfolio - Software Developer Creating Seamless Interfaces" />
+    <!-- Preload critical assets -->
+    <link rel="preload" href="/src/assets/herobg.png" as="image" />
+    <!-- Disable 3D acceleration for low-end devices -->
+    <script>
+      // Check if this is a low-end device
+      if (navigator.deviceMemory && navigator.deviceMemory <= 4 || 
+          navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4 ||
+          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        // Add a class to the HTML element
+        document.documentElement.classList.add('low-end-device');
+      }
+    </script>
     <title>Amogh Portfolio</title>
   </head>
   <body>
