@@ -109,11 +109,17 @@ const Hero = () => {
           // Simple mobile-friendly static content instead of 3D model
           <div className="w-full h-[60vh] flex items-center justify-center">
             <div className="text-center p-5">
-              <img 
-                src={computerImage} 
-                alt="Computer Workstation" 
-                className="mx-auto max-w-full h-auto max-h-[300px] object-contain"
-              />
+              <div className="relative mx-auto max-w-full max-h-[300px]">
+                <img 
+                  src={computerImage} 
+                  alt="Computer Workstation" 
+                  className="mx-auto max-w-full h-auto max-h-[300px] object-contain"
+                  style={{ 
+                    opacity: 0.5, 
+                    filter: "brightness(0.7) contrast(0.9) saturate(0.8)"
+                  }}
+                />
+              </div>
               <p className="text-secondary mt-4 text-lg">
                 Full Stack Developer
               </p>
