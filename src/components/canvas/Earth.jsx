@@ -1,8 +1,9 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 
 import CanvasLoader from "../Loader";
+import { isMobileDevice } from "../../utils/device";
 
 const Earth = () => {
   const earth = useGLTF("./planet/scene.gltf");
@@ -13,6 +14,13 @@ const Earth = () => {
 };
 
 const EarthCanvas = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    // Check if device is mobile, but we'll still render the globe
+    setIsMobile(isMobileDevice());
+  }, []);
+
   return (
     <Canvas
       shadows
@@ -29,6 +37,7 @@ const EarthCanvas = () => {
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls
           autoRotate
+          autoRotateSpeed={isMobile ? 0.3 : 0.5} // Slower rotation on mobile
           enableZoom={false}
           maxPolarAngle={Math.PI / 2}
           minPolarAngle={Math.PI / 2}

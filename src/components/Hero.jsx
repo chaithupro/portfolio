@@ -72,10 +72,6 @@ const Hero = () => {
             .scroll-button {
               bottom: 40px !important;
             }
-            .hero-subtitle {
-              font-size: 14px !important;
-              line-height: 1.4 !important;
-            }
           }
           @media (min-width: 641px) {
             .scroll-button {
@@ -97,17 +93,11 @@ const Hero = () => {
           <h1 className={`${styles.heroHeadText} text-white`}>
             Hi, I'm <span className='text-[#915EFF]'>Amogh</span>
           </h1>
-          {isMobile ? (
-            <p className={`${styles.heroSubText} mt-2 text-white-100 hero-subtitle`}>
-              Software Developer
-            </p>
-          ) : (
-            <p className={`${styles.heroSubText} mt-2 text-white-100`}>
-              Software Developer Creating Seamless Interfaces <br className='sm:block hidden' />
-              Where Code Meets Creativity and <br className='lg:block hidden' />
-              Brings Ideas to Reality
-            </p>
-          )}
+          <p className={`${styles.heroSubText} mt-2 text-white-100`}>
+            Software Developer Creating Seamless Interfaces <br className='sm:block hidden' />
+            Where Code Meets Creativity and <br className='lg:block hidden' />
+            Brings Ideas to Reality
+          </p>
         </div>
       </div>
 
