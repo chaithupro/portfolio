@@ -3,9 +3,29 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 
 import CanvasLoader from "../Loader";
-import { shouldUseSimplifiedUI } from "../../utils/deviceDetection";
+import { shouldUseSimplifiedUI, isMobileDevice } from "../../utils/deviceDetection";
 
-// Simple 2D Earth component for low-end devices
+// Static Earth image component for mobile devices
+const StaticEarthImage = () => {
+  return (
+    <div className="w-full h-80 flex items-center justify-center">
+      <div className="relative w-full max-w-xs mx-auto">
+        <div className="absolute -z-10 inset-0 rounded-full bg-gradient-to-br from-blue-500 via-blue-700 to-indigo-900 blur-lg opacity-50"></div>
+        <img 
+          src="https://cdn.pixabay.com/photo/2021/01/17/14/18/earth-5925051_1280.jpg" 
+          alt="Earth Globe" 
+          className="w-full h-auto rounded-full shadow-lg shadow-purple-900/30 border-2 border-indigo-800/30"
+          style={{ 
+            objectFit: 'cover',
+            aspectRatio: '1/1'
+          }}
+        />
+      </div>
+    </div>
+  );
+};
+
+// Simple 2D Earth component for low-end desktop devices
 const SimplifiedEarth = () => {
   return (
     <div className="w-full h-80 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 via-blue-700 to-indigo-900 overflow-hidden relative">
@@ -31,9 +51,14 @@ const Earth = ({ isMobile }) => {
 const EarthCanvas = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [useSimpleUI, setUseSimpleUI] = useState(false);
+  const [isMobileDevice_, setIsMobileDevice] = useState(false);
 
   useEffect(() => {
-    // Check if this is a low-end or mobile device
+    // Check if this is a mobile device
+    const mobileDev = isMobileDevice();
+    setIsMobileDevice(mobileDev);
+    
+    // Check if this is a low-end device
     setUseSimpleUI(shouldUseSimplifiedUI());
     
     // Check if device is mobile based on screen size
@@ -49,7 +74,12 @@ const EarthCanvas = () => {
     };
   }, []);
 
-  // For very low-end devices, render a simplified 2D version
+  // For mobile devices, render a static image
+  if (isMobileDevice_) {
+    return <StaticEarthImage />;
+  }
+  
+  // For low-end desktop devices, render a simplified version
   if (useSimpleUI) {
     return <SimplifiedEarth />;
   }

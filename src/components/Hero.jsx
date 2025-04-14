@@ -111,6 +111,21 @@ const Hero = () => {
             .scroll-button {
               bottom: 40px !important;
             }
+            .hero-text-container {
+              padding-top: 1rem !important;
+            }
+            .hero-head-text {
+              font-size: 2.5rem !important;
+              line-height: 1.2 !important;
+              text-align: center !important;
+              margin-top: 0 !important;
+            }
+            .hero-sub-text {
+              font-size: 1rem !important;
+              line-height: 1.4 !important;
+              text-align: center !important;
+              margin-top: 0.5rem !important;
+            }
           }
           @media (min-width: 641px) {
             .scroll-button {
@@ -144,20 +159,22 @@ const Hero = () => {
       </style>
 
       <div
-        className={`absolute inset-0 top-[80px] max-w-6xl mx-auto ${styles.paddingX} flex flex-row items-start gap-5`}
+        className={`absolute inset-0 top-[80px] max-w-6xl mx-auto ${styles.paddingX} flex flex-row items-start gap-5 hero-text-container`}
       >
-        <div className='flex flex-col justify-center items-center mt-5'>
+        <div className={`flex flex-col justify-center items-center mt-5 ${isMobile ? 'hidden' : ''}`}>
           <div className='w-5 h-5 rounded-full bg-[#915EFF]' />
           <div className='w-1 sm:h-80 h-40 violet-gradient' />
         </div>
 
-        <div className="z-10 max-w-3xl">
-          <h1 className={`${styles.heroHeadText} text-white`}>
+        <div className={`z-10 ${isMobile ? 'w-full text-center' : 'max-w-3xl'}`}>
+          <h1 className={`${styles.heroHeadText} text-white hero-head-text`}>
             Hi, I'm <span className='text-[#915EFF]'>Amogh</span>
           </h1>
-          <p className={`${styles.heroSubText} mt-2 text-white-100`}>
-            Software Developer Creating Seamless Interfaces <br className='sm:block hidden' />
-            Where Code Meets Creativity and <br className='lg:block hidden' />
+          <p className={`${styles.heroSubText} mt-2 text-white-100 hero-sub-text`}>
+            Software Developer Creating Seamless Interfaces 
+            {!isMobile && <br className='sm:block hidden' />}
+            Where Code Meets Creativity 
+            {!isMobile && <br className='lg:block hidden' />}
             Brings Ideas to Reality
           </p>
         </div>
