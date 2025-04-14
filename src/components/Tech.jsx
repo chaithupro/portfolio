@@ -31,11 +31,21 @@ const Tech = () => {
           {isMobile || isLowEnd ? (
             // Static image for mobile or low-end devices
             <div className="flex flex-col items-center justify-center h-full">
-              <img 
-                src={technology.icon} 
-                alt={technology.name}
-                className="w-16 h-16 object-contain"
-              />
+              <div className="w-16 h-16 rounded-full bg-tertiary flex items-center justify-center p-2">
+                <img 
+                  src={technology.icon} 
+                  alt={technology.name}
+                  className="w-12 h-12 object-contain filter brightness-110 contrast-110"
+                  style={{ 
+                    filter: technology.name === "Next Js" || 
+                            technology.name === "Postgres" || 
+                            technology.name === "SQL" || 
+                            technology.name === "git" ? 
+                            "brightness(1.8) contrast(1.2) invert(0.2)" : 
+                            "brightness(1.1) contrast(1.1)" 
+                  }}
+                />
+              </div>
               <p className="text-center text-secondary mt-2 text-sm">{technology.name}</p>
             </div>
           ) : (

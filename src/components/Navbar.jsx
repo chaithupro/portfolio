@@ -44,7 +44,7 @@ const Navbar = () => {
         >
           <img src={logo} alt='logo' className='w-9 h-9 object-contain' />
           <p className='text-white text-[18px] font-bold cursor-pointer flex '>
-            Amogh &nbsp; <span className='sm:block hidden'> | Full Stack Developer</span>
+            Amogh &nbsp; <span className=''>| Full Stack Developer</span>
           </p>
         </Link>
 
@@ -67,6 +67,7 @@ const Navbar = () => {
             src={toggle ? close : menu}
             alt='menu'
             className='w-[28px] h-[28px] object-contain'
+            style={{ opacity: toggle ? 0.5 : 1 }}
             onClick={() => setToggle(!toggle)}
           />
 
