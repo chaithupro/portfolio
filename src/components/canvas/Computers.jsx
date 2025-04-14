@@ -6,7 +6,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
 
 import CanvasLoader from "../Loader";
-import { shouldUseSimplifiedUI, isMobileDevice } from "../../utils/deviceDetection";
+import { isMobileDevice, isLowEndDevice, getRenderingSettings } from "../../utils/device";
 
 // Configure draco loader to improve performance
 const dracoLoader = new DRACOLoader();
@@ -16,12 +16,10 @@ dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
-// Preload the model only if not on a mobile device
-if (typeof window !== 'undefined' && !isMobileDevice()) {
-  useGLTF.preload("./desktop_pc/scene.gltf", true, (loader) => {
-    loader.setDRACOLoader(dracoLoader);
-  });
-}
+// Preload the model to avoid loading delays on component mount
+useGLTF.preload("./desktop_pc/scene.gltf", true, (loader) => {
+  loader.setDRACOLoader(dracoLoader);
+});
 
 const Computers = ({ isMobile }) => {
   const [modelLoaded, setModelLoaded] = useState(false);
@@ -36,8 +34,34 @@ const Computers = ({ isMobile }) => {
   useEffect(() => {
     if (computer && computer.scene) {
       setModelLoaded(true);
+      
+      // Optimize geometry for mobile devices
+      if (isMobile && computer.scene) {
+        computer.scene.traverse((child) => {
+          if (child.isMesh) {
+            // Reduce polygon count for mobile devices
+            if (child.geometry) {
+              const simplifiedGeometry = child.geometry.clone();
+              // Disable frustum culling optimization
+              child.frustumCulled = false;
+              
+              // Reduce material complexity
+              if (child.material) {
+                // Simplify materials by disabling expensive features
+                child.material.precision = 'lowp'; // Use low precision
+                child.material.fog = false; // Disable fog
+                child.material.flatShading = true; // Use flat shading
+                
+                // Disable reflections and expensive effects
+                if (child.material.envMap) child.material.envMap = null;
+                child.material.needsUpdate = true;
+              }
+            }
+          }
+        });
+      }
     }
-  }, [computer]);
+  }, [computer, isMobile]);
 
   // Apply progressive appearance
   useFrame(() => {
@@ -68,10 +92,10 @@ const Computers = ({ isMobile }) => {
           </mesh>
         )}
         
-        {/* Actual model - lower polygon version for mobile */}
+        {/* Actual model */}
         <primitive
           object={computer.scene}
-          scale={isMobile ? 0.6 : 0.75}
+          scale={isMobile ? 0.6 : 0.75} // Smaller scale for mobile
           position={isMobile ? [0, -3, -2.2] : [0, -3.25, -1.5]}
           rotation={[-0.01, -0.2, -0.1]}
         />
@@ -82,81 +106,92 @@ const Computers = ({ isMobile }) => {
 
 const ComputersCanvas = ({ onError }) => {
   const [isMobile, setIsMobile] = useState(false);
-  const [useSimpleUI, setUseSimpleUI] = useState(false);
-  const [isMobileDevice_, setIsMobileDevice] = useState(false);
+  const [isLowEnd, setIsLowEnd] = useState(false);
+  const [renderSettings, setRenderSettings] = useState({});
 
   useEffect(() => {
-    // Check if this is a mobile device - completely skip rendering if true
-    const mobileDev = isMobileDevice();
-    setIsMobileDevice(mobileDev);
-    
-    if (mobileDev) {
-      return; // Don't proceed with other checks if it's a mobile device
+    try {
+      // Check device capabilities
+      const checkDeviceCapabilities = () => {
+        const mobile = isMobileDevice();
+        const lowEnd = isLowEndDevice();
+        setIsMobile(mobile);
+        setIsLowEnd(lowEnd);
+        setRenderSettings(getRenderingSettings());
+      };
+      
+      checkDeviceCapabilities();
+      
+      // Add a listener for changes to the screen size
+      const mediaQuery = window.matchMedia("(max-width: 500px)");
+
+      // Define a callback function to handle changes to the media query
+      const handleMediaQueryChange = (event) => {
+        setIsMobile(event.matches || isMobileDevice());
+        checkDeviceCapabilities();
+      };
+
+      // Add the callback function as a listener for changes to the media query
+      mediaQuery.addEventListener("change", handleMediaQueryChange);
+
+      // Remove the listener when the component is unmounted
+      return () => {
+        mediaQuery.removeEventListener("change", handleMediaQueryChange);
+      };
+    } catch (error) {
+      console.error("Error in ComputersCanvas:", error);
+      if (onError) onError();
     }
-    
-    // Check if this is a low-end device
-    setUseSimpleUI(shouldUseSimplifiedUI());
-    
-    // Add a listener for changes to the screen size
-    const mediaQuery = window.matchMedia("(max-width: 500px)");
+  }, [onError]);
 
-    // Set the initial value of the `isMobile` state variable
-    setIsMobile(mediaQuery.matches);
-
-    // Define a callback function to handle changes to the media query
-    const handleMediaQueryChange = (event) => {
-      setIsMobile(event.matches);
-    };
-
-    // Add the callback function as a listener for changes to the media query
-    mediaQuery.addEventListener("change", handleMediaQueryChange);
-
-    // Remove the listener when the component is unmounted
-    return () => {
-      mediaQuery.removeEventListener("change", handleMediaQueryChange);
-    };
-  }, []);
-
-  // If this is a mobile device, don't render anything
-  if (isMobileDevice_) {
-    return null;
-  }
-  
-  // If this is a low-end device, don't render the 3D model
-  if (useSimpleUI) {
-    return null;
+  // If it's a low-end device, don't render the 3D canvas at all
+  if (isLowEnd) {
+    return (
+      <div className="w-full h-[60vh] flex items-center justify-center">
+        <div className="text-center p-5">
+          <img 
+            src="/desktop_pc/computer_static.png" 
+            alt="Computer Workstation" 
+            className="mx-auto max-w-full h-auto max-h-[300px] object-contain"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = "/hero-fallback.jpg"; // Fallback image if main one fails
+            }}
+          />
+          <p className="text-secondary mt-4 text-lg">
+            Full Stack Developer & AI/ML Engineer
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
     <Canvas
-      frameloop='demand'
+      frameloop={renderSettings.frameloop || 'always'}
       shadows
-      dpr={[1, 1.5]} // Reduced DPR for better performance
+      dpr={renderSettings.dpr || [1, 2]}
       camera={{ position: [20, 3, 5], fov: 25 }}
       gl={{ 
         preserveDrawingBuffer: true,
-        powerPreference: 'high-performance',
-        antialias: false // Disable antialiasing for better performance
+        powerPreference: renderSettings.powerPreference || 'default',
+        antialias: renderSettings.antialias !== undefined ? renderSettings.antialias : true,
+        alpha: renderSettings.alpha !== undefined ? renderSettings.alpha : true,
+        stencil: renderSettings.stencil !== undefined ? renderSettings.stencil : true,
+        depth: true
       }}
-      performance={{ min: 0.5 }} // Allow throttling for better performance
-      onCreated={({ gl }) => {
-        // Additional performance optimizations
-        gl.shadowMap.enabled = false; // Disable shadow mapping for mobile
-        if (isMobile) {
-          gl.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-        }
-      }}
-      onError={(error) => {
-        console.error("Canvas error:", error);
-        if (onError) onError(error);
-      }}
+      performance={{ min: isMobile ? 0.3 : 0.5 }} // Lower minimum performance on mobile
+      onError={onError}
     >
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls
           enableZoom={false}
           maxPolarAngle={Math.PI / 2}
           minPolarAngle={Math.PI / 2}
-          enableRotate={!isMobile} // Disable rotation on mobile
+          // Reduce sensitivity on mobile
+          rotateSpeed={isMobile ? 0.5 : 1}
+          enableDamping={!isMobile} // Disable damping on mobile
+          enablePan={false}
         />
         <Computers isMobile={isMobile} />
       </Suspense>

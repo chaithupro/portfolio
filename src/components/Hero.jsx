@@ -4,76 +4,43 @@ import { useState, Suspense, useEffect } from "react";
 import { styles } from "../styles";
 import { ComputersCanvas } from "./canvas";
 import ErrorBoundary from "./ErrorBoundary";
-import { shouldUseSimplifiedUI, isMobileDevice } from "../utils/deviceDetection";
-// Direct import of images we can use if laptop_placeholder.png is not available
-import webImage from "../assets/web.png";
-import mobileImage from "../assets/mobile.png";
-
-// Enhanced hero section for mobile
-const MobileHeroContent = () => {
-  return (
-    <div className="w-full h-[60vh] flex items-center justify-center">
-      <div className="relative w-full max-w-lg z-10">
-        <div className="absolute -top-10 -left-10 w-60 h-60 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob"></div>
-        <div className="absolute -bottom-10 -right-10 w-60 h-60 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob animation-delay-4000"></div>
-        <div className="flex flex-col items-center justify-center text-center p-4">
-          <h2 className="text-3xl font-bold text-white mb-4">Full Stack Developer</h2>
-          <p className="text-secondary text-xl mb-6">Turning ideas into digital reality</p>
-          
-          <div className="grid grid-cols-3 gap-4 max-w-xs mx-auto mb-8">
-            {["React", "Node.js", "Three.js", "MongoDB", "TypeScript", "Next.js"].map((tech, index) => (
-              <div key={index} className="bg-tertiary p-2 rounded-lg text-white text-sm hover:bg-purple-700 transition-colors">
-                {tech}
-              </div>
-            ))}
-          </div>
-          
-          <a href="#about" className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-full transition-all hover:scale-105">
-            Explore My Work
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Simple placeholder component for desktop low-end devices
-const SimpleLaptopView = () => {
-  return (
-    <div className="w-full h-[60vh] flex items-center justify-center">
-      <div className="relative w-full max-w-lg">
-        <div className="absolute -top-10 -left-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-50 animate-blob"></div>
-        <div className="absolute -bottom-10 -right-10 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-50 animate-blob animation-delay-4000"></div>
-        <div className="relative">
-          <img 
-            src={webImage} // Use imported image directly
-            alt="Developer Workspace" 
-            className="w-full max-w-md mx-auto object-contain"
-          />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-white text-center p-4 bg-black bg-opacity-50 rounded-lg">
-              <h2 className="text-xl font-bold">Full Stack Developer</h2>
-              <p>Crafting digital experiences</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+import { isMobileDevice, isLowEndDevice, supportsWebGL } from "../utils/device";
 
 const Hero = () => {
   const [canvasError, setCanvasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [useSimpleUI, setUseSimpleUI] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [shouldRender3D, setShouldRender3D] = useState(true);
 
+  // Check device capabilities
   useEffect(() => {
-    // Check device capability on mount
-    setUseSimpleUI(shouldUseSimplifiedUI());
-    setIsMobile(isMobileDevice());
+    const checkDeviceCapabilities = () => {
+      const mobile = isMobileDevice();
+      const lowEnd = isLowEndDevice();
+      const webGLSupport = supportsWebGL();
+      
+      setIsMobile(mobile);
+      // Only render 3D if not a low-end device and WebGL is supported
+      setShouldRender3D(!lowEnd && webGLSupport);
+    };
     
-    // Set loading to false after a timeout to prevent indefinite loading state
+    checkDeviceCapabilities();
+    window.addEventListener('resize', checkDeviceCapabilities);
+    
+    return () => {
+      window.removeEventListener('resize', checkDeviceCapabilities);
+    };
+  }, []);
+
+  const handleCanvasError = () => {
+    console.error("3D canvas failed to load");
+    setCanvasError(true);
+    setIsLoading(false);
+    setShouldRender3D(false);
+  };
+
+  // Set loading to false after a timeout to prevent indefinite loading state
+  useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 5000); // 5 seconds timeout
@@ -81,16 +48,10 @@ const Hero = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleCanvasError = () => {
-    console.error("3D canvas failed to load");
-    setCanvasError(true);
-    setIsLoading(false);
-  };
-
   // Redirect to homepage if canvas error persists for too long
   useEffect(() => {
     let redirectTimer;
-    if (canvasError && !useSimpleUI) {
+    if (canvasError) {
       // If canvas error occurs, set a timer to redirect to homepage
       redirectTimer = setTimeout(() => {
         console.log("Redirecting to homepage due to persistent canvas error");
@@ -101,7 +62,7 @@ const Hero = () => {
     return () => {
       if (redirectTimer) clearTimeout(redirectTimer);
     };
-  }, [canvasError, useSimpleUI]);
+  }, [canvasError]);
 
   return (
     <section className={`relative w-full h-screen mx-auto`}>
@@ -111,105 +72,56 @@ const Hero = () => {
             .scroll-button {
               bottom: 40px !important;
             }
-            .hero-text-container {
-              padding-top: 1rem !important;
-              max-width: 100% !important;
-              width: 100% !important;
-              display: flex !important;
-              flex-direction: column !important;
-              align-items: center !important;
-              text-align: center !important;
-            }
-            .hero-head-text {
-              font-size: 2.75rem !important;
-              line-height: 1.2 !important;
-              text-align: center !important;
-              margin: 0 auto !important;
-              width: 100% !important;
-            }
-            .hero-sub-text {
-              font-size: 1.1rem !important;
-              line-height: 1.5 !important;
-              text-align: center !important;
-              margin: 0.5rem auto !important;
-              width: 100% !important;
-              max-width: 300px !important;
-            }
-            .mobile-text-wrap {
-              display: inline !important;
-            }
           }
           @media (min-width: 641px) {
             .scroll-button {
               bottom: -20px !important;
-            }
-            .mobile-text-wrap {
-              display: none !important;
-            }
-          }
-          
-          .animate-blob {
-            animation: blob-bounce 7s infinite;
-          }
-          
-          .animation-delay-4000 {
-            animation-delay: 4s;
-          }
-          
-          @keyframes blob-bounce {
-            0%, 100% {
-              transform: translate(0, 0) scale(1);
-            }
-            25% {
-              transform: translate(20px, 20px) scale(1.1);
-            }
-            50% {
-              transform: translate(0, 20px) scale(1);
-            }
-            75% {
-              transform: translate(-20px, 0) scale(0.9);
             }
           }
         `}
       </style>
 
       <div
-        className={`absolute inset-0 top-[80px] max-w-6xl mx-auto ${styles.paddingX} flex flex-row items-start gap-5 hero-text-container`}
+        className={`absolute inset-0 top-[80px] max-w-6xl mx-auto ${styles.paddingX} flex flex-row items-start gap-5`}
       >
-        <div className={`flex flex-col justify-center items-center mt-5 ${isMobile ? 'hidden' : ''}`}>
+        <div className='flex flex-col justify-center items-center mt-5'>
           <div className='w-5 h-5 rounded-full bg-[#915EFF]' />
           <div className='w-1 sm:h-80 h-40 violet-gradient' />
         </div>
 
-        <div className={`z-10 ${isMobile ? 'w-full text-center' : 'max-w-3xl'}`}>
-          <h1 className={`${styles.heroHeadText} text-white hero-head-text`}>
+        <div className="z-10 max-w-3xl">
+          <h1 className={`${styles.heroHeadText} text-white`}>
             Hi, I'm <span className='text-[#915EFF]'>Amogh</span>
           </h1>
-          {isMobile ? (
-            <p className={`${styles.heroSubText} mt-2 text-white-100 hero-sub-text`}>
-              Software Developer <br />
-              Creating Seamless Interfaces <br />
-              Where Code Meets Creativity <br />
-              Brings Ideas to Reality
-            </p>
-          ) : (
-            <p className={`${styles.heroSubText} mt-2 text-white-100 hero-sub-text`}>
-              Software Developer Creating Seamless Interfaces 
-              <br className='sm:block hidden' />
-              Where Code Meets Creativity 
-              <br className='lg:block hidden' />
-              Brings Ideas to Reality
-            </p>
-          )}
+          <p className={`${styles.heroSubText} mt-2 text-white-100`}>
+            Software Developer Creating Seamless Interfaces <br className='sm:block hidden' />
+            Where Code Meets Creativity and <br className='lg:block hidden' />
+            Brings Ideas to Reality
+          </p>
         </div>
       </div>
 
-      <ErrorBoundary redirectToHome={false}>
-        {isMobile ? (
-          <MobileHeroContent />
-        ) : useSimpleUI ? (
-          <SimpleLaptopView />
+      <ErrorBoundary redirectToHome={true}>
+        {!shouldRender3D ? (
+          // Simple mobile-friendly static content instead of 3D model
+          <div className="w-full h-[60vh] flex items-center justify-center">
+            <div className="text-center p-5">
+              <img 
+                src="/desktop_pc/computer_static.png" 
+                alt="Computer Workstation" 
+                className="mx-auto max-w-full h-auto max-h-[300px] object-contain"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "/hero-fallback.jpg"; // Fallback image if main one fails
+                }}
+              />
+              <p className="text-secondary mt-4 text-lg">
+                Full Stack Developer & AI/ML Engineer
+              </p>
+            </div>
+          </div>
         ) : (
+          // Full 3D experience for desktop
           <Suspense fallback={
             <div className="w-full h-screen flex items-center justify-center">
               <p className="text-white">Loading 3D Model...</p>
@@ -223,7 +135,12 @@ const Hero = () => {
             {!canvasError ? (
               <ComputersCanvas onError={handleCanvasError} />
             ) : (
-              <SimpleLaptopView />
+              <div className="w-full h-[60vh] flex items-center justify-center">
+                <div className="bg-tertiary p-8 rounded-xl text-center max-w-md">
+                  <h3 className="text-white text-xl mb-2">3D Model Failed to Load</h3>
+                  <p className="text-secondary">Redirecting to homepage...</p>
+                </div>
+              </div>
             )}
           </Suspense>
         )}

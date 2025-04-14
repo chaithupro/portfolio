@@ -14,11 +14,11 @@ const Ball = (props) => {
   const [decal] = useTexture([props.imgUrl]);
 
   return (
-    <Float speed={1.75} rotationIntensity={props.isMobile ? 0.5 : 1} floatIntensity={props.isMobile ? 1 : 2}>
+    <Float speed={1.75} rotationIntensity={1} floatIntensity={2}>
       <ambientLight intensity={0.25} />
       <directionalLight position={[0, 0, 0.05]} />
-      <mesh castShadow receiveShadow scale={props.isMobile ? 2.25 : 2.75}>
-        <icosahedronGeometry args={[1, props.isMobile ? 0 : 1]} />
+      <mesh castShadow receiveShadow scale={2.75}>
+        <icosahedronGeometry args={[1, 1]} />
         <meshStandardMaterial
           color='#fff8eb'
           polygonOffset
@@ -38,32 +38,15 @@ const Ball = (props) => {
 };
 
 const BallCanvas = ({ icon }) => {
-  // Check if we're on mobile based on screen width
-  const isMobile = window.innerWidth <= 768;
-
   return (
     <Canvas
       frameloop='demand'
-      dpr={isMobile ? [0.8, 1.5] : [1, 2]} // Lower resolution on mobile
-      gl={{ 
-        preserveDrawingBuffer: true,
-        antialias: !isMobile // Disable antialiasing on mobile
-      }}
-      // Only update on user interaction for mobile devices to save power
-      style={{
-        touchAction: 'none',
-        cursor: 'pointer'
-      }}
+      dpr={[1, 2]}
+      gl={{ preserveDrawingBuffer: true }}
     >
       <Suspense fallback={<CanvasLoader />}>
-        <OrbitControls 
-          enableZoom={false}
-          enablePan={false}
-          rotateSpeed={isMobile ? 0.5 : 1} // Slower rotation on mobile
-          autoRotate={!isMobile} // Disable auto rotation on mobile
-          autoRotateSpeed={1}
-        />
-        <Ball imgUrl={icon} isMobile={isMobile} />
+        <OrbitControls enableZoom={false} />
+        <Ball imgUrl={icon} />
       </Suspense>
 
       <Preload all />
