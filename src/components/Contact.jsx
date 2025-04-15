@@ -6,6 +6,7 @@ import { styles } from "../styles";
 import { EarthCanvas } from "./canvas";
 import { SectionWrapper } from "../hoc";
 import { slideIn } from "../utils/motion";
+import { github, linkedin, leetcode } from "../assets";
 
 const Contact = () => {
   const formRef = useRef();
@@ -74,6 +75,34 @@ const Contact = () => {
       >
         <p className={styles.sectionSubText}>Get in touch</p>
         <h3 className={styles.sectionHeadText}>Contact.</h3>
+
+        {/* Social Media Links */}
+        <div className="flex flex-wrap gap-6 mt-5 mb-8">
+          <a
+            href="https://github.com/amogh-55"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-transform hover:scale-110"
+          >
+            <img src={github} alt="GitHub" className="w-10 h-10 object-contain" />
+          </a>
+          <a
+            href="https://www.linkedin.com/in/amogh25/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-transform hover:scale-110"
+          >
+            <img src={linkedin} alt="LinkedIn" className="w-10 h-10 object-contain" />
+          </a>
+          <a
+            href="https://leetcode.com/u/amogh12/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-transform hover:scale-110"
+          >
+            <img src={leetcode} alt="LeetCode" className="w-10 h-10 object-contain" />
+          </a>
+        </div>
 
         <form
           ref={formRef}
