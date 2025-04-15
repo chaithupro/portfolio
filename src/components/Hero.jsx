@@ -109,14 +109,19 @@ const Hero = () => {
           // Simple mobile-friendly static content instead of 3D model
           <div className="w-full h-[60vh] flex items-center justify-center">
             <div className="text-center p-5">
+              <p className="text-secondary text-lg mb-6">
+                Full Stack Developer
+              </p>
               <img 
                 src={computerImage} 
                 alt="Computer Workstation" 
-                className="mx-auto max-w-full h-auto max-h-[300px] object-contain"
+                className="mx-auto max-w-full h-auto max-h-[300px] object-contain mt-4"
               />
-              <p className="text-secondary mt-4 text-lg">
-                Full Stack Developer
-              </p>
+              <div className="flex justify-center gap-4 mt-6">
+                <a href="https://github.com/amogh-55" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#915EFF]">GitHub</a>
+                <a href="https://www.linkedin.com/in/amogh25/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#915EFF]">LinkedIn</a>
+                <a href="https://leetcode.com/u/amogh12/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#915EFF]">LeetCode</a>
+              </div>
             </div>
           </div>
         ) : (
