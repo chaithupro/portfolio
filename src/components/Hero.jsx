@@ -108,11 +108,11 @@ const Hero = () => {
         {!shouldRender3D ? (
           // Simple mobile-friendly static content instead of 3D model
           <div className="w-full h-[60vh] flex items-center justify-center">
-            <div className="text-center p-5 mt-20">
+            <div className="text-center p-5 mt-40">
               <img 
                 src={computerImage} 
                 alt="Computer Workstation" 
-                className="mx-auto max-w-full h-auto max-h-[300px] object-contain mt-14"
+                className="mx-auto max-w-full h-auto max-h-[300px] object-contain mt-32"
               />
               <p className="text-secondary mt-4 text-lg">
                 Full Stack Developer
