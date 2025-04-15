@@ -119,7 +119,7 @@ const Hero = () => {
                 className="mx-auto max-w-full h-auto max-h-[300px] object-contain mt-32"
               />
               <p className="text-secondary mt-4 text-lg">
-                Full Stack Developer
+                Developer
               </p>
             </div>
           </div>

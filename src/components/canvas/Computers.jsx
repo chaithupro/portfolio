@@ -162,7 +162,7 @@ const ComputersCanvas = ({ onError }) => {
             }}
           />
           <p className="text-secondary mt-4 text-lg">
-            Full Stack Developer & AI/ML Engineer
+            Developer
           </p>
         </div>
       </div>
