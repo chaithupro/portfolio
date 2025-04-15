@@ -6,7 +6,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
 
 import CanvasLoader from "../Loader";
-import { isMobileDevice, isLowEndDevice, getRenderingSettings } from "../../utils/device";
+import { isMobileDevice, isLowEndDevice, isAndroidDevice, getRenderingSettings } from "../../utils/device";
 
 // Configure draco loader to improve performance
 const dracoLoader = new DRACOLoader();
@@ -107,6 +107,7 @@ const Computers = ({ isMobile }) => {
 const ComputersCanvas = ({ onError }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [isLowEnd, setIsLowEnd] = useState(false);
+  const [isAndroid, setIsAndroid] = useState(false);
   const [renderSettings, setRenderSettings] = useState({});
 
   useEffect(() => {
@@ -115,8 +116,10 @@ const ComputersCanvas = ({ onError }) => {
       const checkDeviceCapabilities = () => {
         const mobile = isMobileDevice();
         const lowEnd = isLowEndDevice();
+        const android = isAndroidDevice();
         setIsMobile(mobile);
         setIsLowEnd(lowEnd);
+        setIsAndroid(android);
         setRenderSettings(getRenderingSettings());
       };
       
@@ -144,8 +147,8 @@ const ComputersCanvas = ({ onError }) => {
     }
   }, [onError]);
 
-  // If it's a low-end device, don't render the 3D canvas at all
-  if (isLowEnd) {
+  // If it's a low-end device or Android device, don't render the 3D canvas at all
+  if (isLowEnd || isAndroid) {
     return (
       <div className="w-full h-[60vh] flex items-center justify-center">
         <div className="text-center p-5">

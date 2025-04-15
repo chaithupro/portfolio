@@ -13,11 +13,22 @@ export const isMobileDevice = () => {
 };
 
 /**
+ * Checks if the device is an Android device
+ * @returns {boolean} True if the device is an Android device
+ */
+export const isAndroidDevice = () => {
+  return /Android/i.test(navigator.userAgent);
+};
+
+/**
  * Checks if the current device is a low-end device (mobile with limited resources)
  * @returns {boolean} True if the device is a low-end device
  */
 export const isLowEndDevice = () => {
   const mobile = isMobileDevice();
+  
+  // Always return true for Android devices to prevent 3D model loading
+  if (isAndroidDevice()) return true;
   
   // Only check hardware constraints for mobile devices
   if (!mobile) return false;

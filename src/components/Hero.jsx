@@ -4,7 +4,7 @@ import { useState, Suspense, useEffect } from "react";
 import { styles } from "../styles";
 import { ComputersCanvas } from "./canvas";
 import ErrorBoundary from "./ErrorBoundary";
-import { isMobileDevice, isLowEndDevice, supportsWebGL } from "../utils/device";
+import { isMobileDevice, isLowEndDevice, supportsWebGL, isAndroidDevice } from "../utils/device";
 
 // Import one of the existing images to use as a fallback
 import computerImage from "../assets/web.png";
@@ -13,6 +13,7 @@ const Hero = () => {
   const [canvasError, setCanvasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [isAndroid, setIsAndroid] = useState(false);
   const [shouldRender3D, setShouldRender3D] = useState(true);
 
   // Check device capabilities
@@ -21,10 +22,13 @@ const Hero = () => {
       const mobile = isMobileDevice();
       const lowEnd = isLowEndDevice();
       const webGLSupport = supportsWebGL();
+      const android = isAndroidDevice();
       
       setIsMobile(mobile);
-      // Only render 3D if not a low-end device and WebGL is supported
-      setShouldRender3D(!lowEnd && webGLSupport);
+      setIsAndroid(android);
+      
+      // Only render 3D if not a low-end device, not Android, and WebGL is supported
+      setShouldRender3D(!lowEnd && !android && webGLSupport);
     };
     
     checkDeviceCapabilities();
