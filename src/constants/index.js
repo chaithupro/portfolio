@@ -21,7 +21,7 @@ import {
   shopify,
   carrent,
   jobit,
-  tripguide,
+
   threejs,
 } from "../assets";
 import sihIcon from '../assets/company/sih.png';
@@ -39,6 +39,7 @@ import nextjs from '../assets/tech/nextjs.png';
 import postgres from '../assets/tech/postgres.png';
 
 import aws from '../assets/tech/aws.png';
+import fundPitch from '../assets/tech/fund.png';
 
 
 
@@ -252,9 +253,31 @@ const testimonials = [
 
 const projects = [
   {
+    name: "FundPitch",
+    description:
+    "FundPitch is a collaborative platform that empowers early-stage startups to connect with investors, advisors, and service providers in real-time. It streamlines pitch sharing, secure document exchange, and interest-based expressions to accelerate funding and partnership opportunities",
+    tags: [
+      {
+        name: "Next Js",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "PostgreSQL",
+        color: "green-text-gradient",
+      },
+      {
+        name: "Amazon SES",
+        color: "pink-text-gradient",
+      },
+    ],
+    image: fundPitch,
+    source_code_link: "https://github.com/amogh-55/FundPitch",
+  },
+  {
+    
     name: "Corescue",
     description:
-    "A web application built to revolutionize disaster response and rescue coordination. It enables real-time tracking of rescue agencies, a seamless one-click emergency alert system, and efficient supply chain management between relief and collection centers. Designed to save lives and streamline efforts, it’s a game-changer for handling crisis situations with precision and speed",
+    "A web application built to revolutionize disaster response and rescue coordination. It enables real-time tracking of rescue agencies, a seamless one-click emergency alert system, and efficient management between relief and collection centers. Designed to save lives , it’s a game-changer for handling crisis with precision and speed",
      tags: [
       {
         name: "MERN",
@@ -272,6 +295,7 @@ const projects = [
     image: carrent,
     source_code_link: "https://github.com/amogh-55/Disaster-Managemet",
   },
+  
    
   {
     name: "ChefNest Food App",
@@ -296,27 +320,7 @@ const projects = [
     source_code_link: "https://github.com/amogh-55/internship",
   },
   
-  {
-    name: "Role Based Access control",
-    description:
-      "A comprehensive web application designed to manage users, roles & permissions efficiently. With an intuitive React-based user management dashboard, it allows admins to manage user data, roles & permissions, all while providing a simulated API service for testing. Features include creating & editing users, role assignment,permission management, all wrapped in modern, responsive UI.",
-    tags: [
-      {
-        name: "React",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "Tailwind",
-        color: "green-text-gradient",
-      },
-      {
-        name: "Rest Api",
-        color: "pink-text-gradient",
-      },
-    ],
-    image: tripguide,
-    source_code_link: "https://github.com/amogh-55/-RBAC-Admin-Dashboard",
-  },
+  
  
 ];
 
