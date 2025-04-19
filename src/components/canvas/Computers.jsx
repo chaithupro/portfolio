@@ -21,7 +21,7 @@ useGLTF.preload("./desktop_pc/scene.gltf", true, (loader) => {
   loader.setDRACOLoader(dracoLoader);
 });
 
-const Computers = ({ isMobile }) => {
+const Computers = ({ isMobile, onLoaded }) => {
   const [modelLoaded, setModelLoaded] = useState(false);
   const groupRef = useRef();
   
@@ -34,6 +34,10 @@ const Computers = ({ isMobile }) => {
   useEffect(() => {
     if (computer && computer.scene) {
       setModelLoaded(true);
+      // Call the onLoaded callback if provided
+      if (onLoaded && typeof onLoaded === 'function') {
+        onLoaded();
+      }
       
       // Optimize geometry for mobile devices
       if (isMobile && computer.scene) {
@@ -61,7 +65,7 @@ const Computers = ({ isMobile }) => {
         });
       }
     }
-  }, [computer, isMobile]);
+  }, [computer, isMobile, onLoaded]);
 
   // Apply progressive appearance
   useFrame(() => {
@@ -104,7 +108,7 @@ const Computers = ({ isMobile }) => {
   );
 };
 
-const ComputersCanvas = ({ onError }) => {
+const ComputersCanvas = ({ onError, onLoaded }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [isLowEnd, setIsLowEnd] = useState(false);
   const [isAndroid, setIsAndroid] = useState(false);
@@ -149,6 +153,13 @@ const ComputersCanvas = ({ onError }) => {
 
   // If it's a low-end device or Android device, don't render the 3D canvas at all
   if (isLowEnd || isAndroid) {
+    // Tell parent component that model is "loaded" (actually skipped)
+    useEffect(() => {
+      if (onLoaded && typeof onLoaded === 'function') {
+        onLoaded();
+      }
+    }, [onLoaded]);
+
     return (
       <div className="w-full h-[60vh] flex items-center justify-center">
         <div className="text-center p-5">
@@ -185,7 +196,7 @@ const ComputersCanvas = ({ onError }) => {
       }}
       performance={{ min: isMobile ? 0.3 : 0.5 }} // Lower minimum performance on mobile
       onError={onError}
-      className="!absolute !top-[200px] !left-0 !z-0" // Add positioning class to push it down and set lower z-index
+      className="!absolute !top-[150px] !left-0 !z-0"
     >
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls
@@ -197,7 +208,7 @@ const ComputersCanvas = ({ onError }) => {
           enableDamping={!isMobile} // Disable damping on mobile
           enablePan={false}
         />
-        <Computers isMobile={isMobile} />
+        <Computers isMobile={isMobile} onLoaded={onLoaded} />
       </Suspense>
 
       <Preload all />

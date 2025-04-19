@@ -15,6 +15,7 @@ const Hero = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isAndroid, setIsAndroid] = useState(false);
   const [shouldRender3D, setShouldRender3D] = useState(true);
+  const [modelLoaded, setModelLoaded] = useState(false);
 
   // Check device capabilities
   useEffect(() => {
@@ -46,11 +47,17 @@ const Hero = () => {
     setShouldRender3D(false);
   };
 
+  // Function to handle when the model is loaded
+  const handleModelLoaded = () => {
+    setModelLoaded(true);
+    setIsLoading(false);
+  };
+
   // Set loading to false after a timeout to prevent indefinite loading state
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 5000); // 5 seconds timeout
+    }, 3000); // Reduced from 5 seconds to 3 seconds
     
     return () => clearTimeout(timer);
   }, []);
@@ -77,12 +84,17 @@ const Hero = () => {
         {`
           @media (max-width: 640px) {
             .scroll-button {
-              bottom: 40px !important;
+              bottom: 20px !important;
             }
           }
-          @media (min-width: 641px) {
+          @media (min-width: 641px) and (max-width: 1024px) {
             .scroll-button {
               bottom: -20px !important;
+            }
+          }
+          @media (min-width: 1025px) {
+            .scroll-button {
+              bottom: -40px !important;
             }
           }
         `}
@@ -112,11 +124,11 @@ const Hero = () => {
         {!shouldRender3D ? (
           // Simple mobile-friendly static content instead of 3D model
           <div className="w-full h-[60vh] flex items-center justify-center">
-            <div className="text-center p-5 mt-40">
+            <div className="text-center p-5 mt-20">
               <img 
                 src={computerImage} 
                 alt="Computer Workstation" 
-                className="mx-auto max-w-full h-auto max-h-[300px] object-contain mt-32"
+                className="mx-auto max-w-full h-auto max-h-[300px] object-contain mt-16"
               />
               <p className="text-secondary mt-4 text-lg">
                 Developer
@@ -127,17 +139,13 @@ const Hero = () => {
           // Full 3D experience for desktop
           <div className={`absolute w-full h-full top-0 left-0 z-10 ${styles.canvas3DContainer}`}>
             <Suspense fallback={
-              <div className="w-full h-screen flex items-center justify-center">
-                <p className="text-white">Loading 3D Model...</p>
+              <div className="w-full h-screen flex items-center justify-center pt-20">
+                {/* Loading indicator removed */}
               </div>
             }>
-              {isLoading && (
-                <div className="w-full h-screen flex items-center justify-center">
-                  <p className="text-white">Loading 3D Model...</p>
-                </div>
-              )}
+              {/* Loading indicator removed entirely */}
               {!canvasError ? (
-                <ComputersCanvas onError={handleCanvasError} />
+                <ComputersCanvas onError={handleCanvasError} onLoaded={handleModelLoaded} />
               ) : (
                 <div className="w-full h-[60vh] flex items-center justify-center">
                   <div className="bg-tertiary p-8 rounded-xl text-center max-w-md">
@@ -151,9 +159,17 @@ const Hero = () => {
         )}
       </ErrorBoundary>
 
-      <div className="scroll-button" style={{ position: 'absolute', bottom: '0px', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 20 }}>
+      <div className="scroll-button" style={{ 
+        position: 'absolute', 
+        bottom: '0px',
+        width: '100%', 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        zIndex: 30
+      }}>
         <a href='#about' className="block p-4">
-          <div className='w-[35px] h-[64px] rounded-3xl border-4 border-secondary flex justify-center items-start p-2'>
+          <div className='w-[35px] h-[64px] rounded-3xl border-4 border-secondary flex justify-center items-start pt-4 pb-1 px-2 bg-black bg-opacity-25'>
             <motion.div
               animate={{
                 y: [0, 24, 0],
@@ -163,7 +179,7 @@ const Hero = () => {
                 repeat: Infinity,
                 repeatType: "loop",
               }}
-              className='w-3 h-3 rounded-full bg-secondary mb-1'
+              className='w-3 h-3 rounded-full bg-secondary mb-2'
             />
           </div>
         </a>
