@@ -100,7 +100,7 @@ const Computers = ({ isMobile, onLoaded }) => {
         <primitive
           object={computer.scene}
           scale={isMobile ? 0.6 : 0.75} // Smaller scale for mobile
-          position={isMobile ? [0, -3, -2.2] : [0, -3.25, -1.5]}
+          position={isMobile ? [0, -2.25, -2.2] : [0, -2.5, -1.5]} // Adjusted position to middle ground
           rotation={[-0.01, -0.2, -0.1]}
         />
       </mesh>
@@ -196,7 +196,7 @@ const ComputersCanvas = ({ onError, onLoaded }) => {
       }}
       performance={{ min: isMobile ? 0.3 : 0.5 }} // Lower minimum performance on mobile
       onError={onError}
-      className="!absolute !top-[150px] !left-0 !z-0"
+      className="!absolute !top-[50px] !left-0 !z-0"
     >
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls
