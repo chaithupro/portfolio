@@ -185,6 +185,7 @@ const ComputersCanvas = ({ onError }) => {
       }}
       performance={{ min: isMobile ? 0.3 : 0.5 }} // Lower minimum performance on mobile
       onError={onError}
+      className="!absolute !top-[200px] !left-0 !z-0" // Add positioning class to push it down and set lower z-index
     >
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls

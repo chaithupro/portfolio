@@ -96,7 +96,7 @@ const Hero = () => {
           <div className='w-1 sm:h-80 h-40 violet-gradient' />
         </div>
 
-        <div className="z-10 max-w-3xl">
+        <div className="z-20 max-w-3xl">
           <h1 className={`${styles.heroHeadText} text-white`}>
             Hi, I'm <span className='text-[#915EFF]'>Amogh</span>
           </h1>
@@ -125,27 +125,29 @@ const Hero = () => {
           </div>
         ) : (
           // Full 3D experience for desktop
-          <Suspense fallback={
-            <div className="w-full h-screen flex items-center justify-center">
-              <p className="text-white">Loading 3D Model...</p>
-            </div>
-          }>
-            {isLoading && (
+          <div className={`absolute w-full h-full top-0 left-0 z-10 ${styles.canvas3DContainer}`}>
+            <Suspense fallback={
               <div className="w-full h-screen flex items-center justify-center">
                 <p className="text-white">Loading 3D Model...</p>
               </div>
-            )}
-            {!canvasError ? (
-              <ComputersCanvas onError={handleCanvasError} />
-            ) : (
-              <div className="w-full h-[60vh] flex items-center justify-center">
-                <div className="bg-tertiary p-8 rounded-xl text-center max-w-md">
-                  <h3 className="text-white text-xl mb-2">3D Model Failed to Load</h3>
-                  <p className="text-secondary">Redirecting to homepage...</p>
+            }>
+              {isLoading && (
+                <div className="w-full h-screen flex items-center justify-center">
+                  <p className="text-white">Loading 3D Model...</p>
                 </div>
-              </div>
-            )}
-          </Suspense>
+              )}
+              {!canvasError ? (
+                <ComputersCanvas onError={handleCanvasError} />
+              ) : (
+                <div className="w-full h-[60vh] flex items-center justify-center">
+                  <div className="bg-tertiary p-8 rounded-xl text-center max-w-md">
+                    <h3 className="text-white text-xl mb-2">3D Model Failed to Load</h3>
+                    <p className="text-secondary">Redirecting to homepage...</p>
+                  </div>
+                </div>
+              )}
+            </Suspense>
+          </div>
         )}
       </ErrorBoundary>
 
