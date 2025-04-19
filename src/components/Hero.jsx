@@ -123,12 +123,12 @@ const Hero = () => {
       <ErrorBoundary redirectToHome={true}>
         {!shouldRender3D ? (
           // Simple mobile-friendly static content instead of 3D model
-          <div className="w-full h-[60vh] flex items-center justify-center mt-[-25px]">
-            <div className="text-center p-5 mt-0">
+          <div className="w-full h-[60vh] flex items-center justify-center">
+            <div className="text-center p-5 mt-40">
               <img 
                 src={computerImage} 
                 alt="Computer Workstation" 
-                className="mx-auto max-w-full h-auto max-h-[300px] object-contain mt-12"
+                className="mx-auto max-w-full h-auto max-h-[300px] object-contain mt-32"
               />
               <p className="text-secondary mt-4 text-lg">
                 Developer
